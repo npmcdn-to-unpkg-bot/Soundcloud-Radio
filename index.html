@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SDK playground - Streaming</title>
+    <link rel="stylesheet" href="/css/style.css">
+  	<script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
+    <script async src="js/script.js"></script>
+  </head>
+  <body>
+
+    <form id="searchForm">
+      <input type="text" id="url" placeholder="A track's URL" autofocus />
+    </form>
+
+    <div id="info">
+      <span id="title"></span>
+      <br />
+      <span id="track-info"></span>
+      <button id="play">play</button>
+      <button id="pause">pause</button>
+      <button id="prev" type="button">Previous</button>
+      <button id="next" type="button">Next</button>
+      <button id="vol-down" type="button">Vol -</button>
+      <button id="vol-up" type="button">Vol +</button>
+    </div>
+    <br />
+    <!-- <span  id="progress">|==================================================|</span> -->
+    <span id="track-seconds">00:00:00 / </span><span id="progress"></span><span id="track-length"></span>
+  </body>
+</html>

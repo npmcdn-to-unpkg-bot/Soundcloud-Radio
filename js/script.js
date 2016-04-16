@@ -1,28 +1,28 @@
 SC.initialize({
 	client_id: '35ae1f409c6f36d7cd493f3974c34135'
 });
-var inputField = document.getElementById('url');
+var inputField = document.getElementById('genre');
 var title = document.getElementById('title');
 var trackInfo = document.getElementById('track-info');
 var trackLength = document.getElementById('track-length');
 var info = document.getElementById('info');
 var trackSeconds = document.getElementById('track-seconds');
 var progress = document.getElementById('progress');
+var artwork = document.getElementById('artwork');
 var currentPlayer;
 var chosenGenre;
-var trackNum = 0;
+var currentTrack = 0;
 var playlist = [];
-
 
 String.prototype.mutate = function(position, interlop){
 	return [interlop.repeat(position), this.slice(position)].join('');
 };
 
-function msToTime(d) {
-    var ml = parseInt((d%1000)/100)
-        , s = parseInt((d/1000)%60)
-        , m = parseInt((d/(1000*60))%60)
-        , h = parseInt((d/(1000*60*60))%24);
+function msToTime(d){
+    var ml = parseInt((d%1000)/100),
+				s = parseInt((d/1000)%60),
+				m = parseInt((d/(1000*60))%60),
+				h = parseInt((d/(1000*60*60))%24);
 
     h = (h < 10) ? "0" + h : h;
     m = (m < 10) ? "0" + m : m;
@@ -30,30 +30,43 @@ function msToTime(d) {
 
     return h + ":" + m + ":" + s;
 }
-
 // ███████▒▒▒
-function trackProgress(duration){
-	var x = 0;
-	progress.innerText = progressBar = '▒'.repeat(100);
-	setInterval(function(){
-		if(!paused){
-			progress.innerText = progressBar.mutate(x, '█');
-			x++;
-		}
-	}, 500);
-};
+// function trackProgress(duration){
+// 	var x = 0;
+// 	progress.innerText = progressBar = '▒'.repeat(100);
+// 	setInterval(function(){
+// 		if(!paused){
+// 			progress.innerText = progressBar.mutate(x, '█');
+// 			x++;
+// 		}
+// 	}, 500);
+// };
+
+var createPlaylist = function(trackTitle, trackNum){
+	var trackTitle = document.createTextNode(trackTitle);
+	var list = document.createElement('li');
+	var link = document.createElement('a');
+	link.setAttribute('href', "#");
+	list.setAttribute('id', trackNum);
+	list.className = 'tracks';
+	list.appendChild(link);
+	link.appendChild(trackTitle);
+	document.getElementById('playlist').appendChild(list);
+	listenForTrackSelect();
+}
 
 var getGenre = function(genre){
 	SC.get('/tracks/', {genres: genre})
-		.then(function(track){
-			for (var i = 0; i < track.length; i++) {
-				playlist.push(track);
+		.then(function(tracks){
+			clearPlaylist();
+			for (var i = 0; i < tracks.length; i++) {
+				if(tracks[i].streamable){
+					playlist.push(tracks[i]);
+					createPlaylist(playlist[i].title, i);
+				}
 			}
-			// for (var i = 0; i < playlist.length; i++) {
-				streamTrack(playlist[0][trackNum]);
-				console.log(playlist[0][trackNum].title);
-			// }
-
+			streamTrack(playlist[currentTrack]);
+			console.log(playlist[currentTrack]);
 		});
 }
 
@@ -63,12 +76,14 @@ var streamTrack = function(track){
 			title.innerText = track.title;
 			info.style.display = 'inline-block';
 			trackLength.innerText = msToTime(track.duration);
+			artwork.setAttribute('src', track.artwork_url);
 			currentPlayer = player;
 			player.setVolume(0.2);
-			player.seek(track.duration - 100);
+			player.options.protocols = ['http'];
 			player.play();
+
 			player.on('time', function(){
-				trackSeconds.innerText = msToTime(player.currentTime());
+				trackSeconds.innerText = msToTime(player.currentTime()) + ' / ';
 			});
 
 			player.on('finish', function(){
@@ -76,20 +91,20 @@ var streamTrack = function(track){
 				getGenre(chosenGenre);
 				console.log('the track is finished');
 			});
+
 		  }).catch(function(){
 				console.log(arguments);
 			});
-		};
-
+};
 
 var search = function(event){
 	event.preventDefault();
 	chosenGenre = inputField.value;
 	getGenre(chosenGenre);
 	if (currentPlayer) {
-		currentPlayer.pause();
-		// chosenGenre = inputField.value;
-		getGenre(inputField.value);
+		chosenGenre = '';
+		chosenGenre = inputField.value;
+		getGenre(chosenGenre);
 	}
 };
 document.getElementById('searchForm').addEventListener('submit', search);
@@ -101,6 +116,7 @@ document.getElementById('pause').addEventListener('click', function(){
 document.getElementById('play').addEventListener('click', function(){
 	if (currentPlayer) {
 		currentPlayer.play();
+		getGenre(chosenGenre);
 	}
 });
 document.getElementById('vol-up').addEventListener('click', function(){
@@ -117,13 +133,32 @@ document.getElementById('vol-down').addEventListener('click', function(){
 });
 document.getElementById('next').addEventListener('click', function(){
 	if (currentPlayer) {
-		trackNum++;
-		getGenre();
+		currentTrack++;
+		streamTrack(playlist[currentTrack]);
 	}
 });
 document.getElementById('prev').addEventListener('click', function(){
 	if (currentPlayer) {
-		trackNum--;
-		getGenre();
+		currentTrack--;
+		streamTrack(playlist[currentTrack])
 	}
 });
+
+function clearPlaylist(){
+	playlist = [];
+	var tracks = document.getElementsByClassName('tracks');
+	for (var i = 0; i < tracks.length; i++) {
+			var track = tracks[i];
+			track.remove();
+	}
+}
+
+function listenForTrackSelect(){
+	var tracks = document.getElementsByClassName('tracks');
+
+	for (var i = 0; i < tracks.length; i++) {
+		tracks[i].addEventListener('click', function(){
+			streamTrack(playlist[this.id]);
+		});
+	}
+}

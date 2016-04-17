@@ -1,18 +1,18 @@
 SC.initialize({
 	client_id: '35ae1f409c6f36d7cd493f3974c34135'
 });
-var inputField = document.getElementById('genre');
-var title = document.getElementById('title');
-var trackInfo = document.getElementById('track-info');
-var trackLength = document.getElementById('track-length');
-var info = document.getElementById('info');
-var trackSeconds = document.getElementById('track-seconds');
-var progress = document.getElementById('progress');
-var artwork = document.getElementById('artwork');
-var currentPlayer;
-var chosenGenre;
-var currentTrack = 0;
-var playlist = [];
+var inputField = document.getElementById('genre'),
+    title = document.getElementById('title'),
+		trackInfo = document.getElementById('track-info'),
+		trackLength = document.getElementById('track-length'),
+		info = document.getElementById('info'),
+		trackSeconds = document.getElementById('track-seconds'),
+		progress = document.getElementById('progress'),
+		artwork = document.getElementById('artwork'),
+		currentPlayer,
+		chosenGenre,
+		currentTrack = 0,
+		playlist = [];
 
 String.prototype.mutate = function(position, interlop){
 	return [interlop.repeat(position), this.slice(position)].join('');
@@ -43,9 +43,9 @@ function msToTime(d){
 // };
 
 var createPlaylist = function(trackTitle, trackNum){
-	var trackTitle = document.createTextNode(trackTitle);
-	var list = document.createElement('li');
-	var link = document.createElement('a');
+	var trackTitle = document.createTextNode(trackTitle),
+			list = document.createElement('li'),
+			link = document.createElement('a');
 	link.setAttribute('href', "#");
 	list.setAttribute('id', trackNum);
 	list.className = 'tracks';
@@ -54,17 +54,17 @@ var createPlaylist = function(trackTitle, trackNum){
 	document.getElementById('playlist').appendChild(list);
 	listenForTrackSelect();
 }
-
+var page_size = 200;
 var getGenre = function(genre){
-	SC.get('/tracks/', {genres: genre})
+	SC.get('/tracks/', {genres: genre, limit: page_size})
 		.then(function(tracks){
-			clearPlaylist();
+			// clearPlaylist();
 			console.log(tracks);
 			for (var i = 0; i < tracks.length; i++) {
-				if(tracks[i].streamable){
+				// if(tracks[i].streamable){
 					playlist.push(tracks[i]);
 					createPlaylist(playlist[i].title, i);
-				}
+				// }
 			}
 			streamTrack(playlist[currentTrack]);
 		});

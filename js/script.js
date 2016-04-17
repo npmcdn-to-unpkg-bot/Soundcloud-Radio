@@ -9,14 +9,14 @@ var inputField = document.getElementById('genre'),
 		trackSeconds = document.getElementById('track-seconds'),
 		progress = document.getElementById('progress'),
 		artwork = document.getElementById('artwork'),
-		currentPlayer,
-		chosenGenre,
+		nextPage = document.getElementById('next-page'),
+		searchQuery = 'genre',
+		nextPagePlaylist = [],
 		currentTrack = 0,
-		playlist = [];
-
-String.prototype.mutate = function(position, interlop){
-	return [interlop.repeat(position), this.slice(position)].join('');
-};
+		page_size = 200,
+		playlist = [],
+		currentPlayer,
+		chosenGenre;
 
 function msToTime(d){
     var ml = parseInt((d%1000)/100),
@@ -30,18 +30,6 @@ function msToTime(d){
 
     return h + ":" + m + ":" + s;
 }
-// ███████▒▒▒
-// function trackProgress(duration){
-// 	var x = 0;
-// 	progress.innerText = progressBar = '▒'.repeat(100);
-// 	setInterval(function(){
-// 		if(!paused){
-// 			progress.innerText = progressBar.mutate(x, '█');
-// 			x++;
-// 		}
-// 	}, 500);
-// };
-
 var createPlaylist = function(trackTitle, trackNum){
 	var trackTitle = document.createTextNode(trackTitle),
 			list = document.createElement('li'),
@@ -54,20 +42,34 @@ var createPlaylist = function(trackTitle, trackNum){
 	document.getElementById('playlist').appendChild(list);
 	listenForTrackSelect();
 }
-var page_size = 200;
-var getGenre = function(genre){
-	SC.get('/tracks/', {genres: genre, limit: page_size})
-		.then(function(tracks){
-			// clearPlaylist();
-			console.log(tracks);
-			for (var i = 0; i < tracks.length; i++) {
-				// if(tracks[i].streamable){
-					playlist.push(tracks[i]);
-					createPlaylist(playlist[i].title, i);
-				// }
-			}
-			streamTrack(playlist[currentTrack]);
+
+var getPlaylist = function(playlist){
+	SC.get('/playlists/2050462').then(function(playlist){
+		var collection = [];
+		playlist.tracks.forEach(function(track){
+			console.log(track);
+			collection.push(track);
+			organiseTracks(collection);
 		});
+	});
+}
+
+var getGenre = function(genre){
+	SC.get('/tracks/', {genres: genre, limit: page_size, linked_partitioning: 1})
+		.then(function(tracks){
+			clearPlaylist();
+
+			organiseTracks(tracks.collection);
+			nextPage.style.display = 'inline';
+		});
+}
+
+function organiseTracks(collection){
+	for (var i = 0; i < collection.length; i++) {
+		playlist.push(collection[i]);
+		createPlaylist(playlist[i].title, i);
+	}
+	streamTrack(playlist[currentTrack]);
 }
 
 function displayArtwork(trackArtwork){
@@ -104,16 +106,47 @@ var streamTrack = function(track){
 
 var search = function(event){
 	event.preventDefault();
-	chosenGenre = inputField.value;
-	getGenre(chosenGenre);
-	if (currentPlayer) {
-		clearPlaylist();
-		chosenGenre = '';
-		chosenGenre = inputField.value;
-		getGenre(chosenGenre);
+	if(searchQuery === 'genre'){
+		getGenre(inputField.value);
+	}
+	else if (searchQuery === 'playlist') {
+		getPlaylist();
+	}
+};
+
+function clearPlaylist(){
+	playlist = [];
+	currentTrack = 0;
+		var pl = document.getElementById('playlist');
+	  if (pl) {
+	    while (pl.firstChild) {
+	      pl.removeChild(pl.firstChild);
+	    }
+	  }
+}
+
+function listenForTrackSelect(){
+	var tracks = document.getElementsByClassName('tracks');
+	for (var i = 0; i < tracks.length; i++) {
+		tracks[i].addEventListener('click', function(){
+			currentTrack = +this.id;
+			streamTrack(playlist[this.id]);
+		});
+	}
+}
+
+function highlightPlaying(){
+	var tracks = document.getElementsByClassName('tracks');
+	for (var i = 0; i < tracks.length; i++) {
+		if (+tracks[i].id === currentTrack) {
+			tracks[i].setAttribute('class', "tracks playing");
+		} else {
+			tracks[i].className = 'tracks';
+		}
 	}
 };
 document.getElementById('searchForm').addEventListener('submit', search);
+
 document.getElementById('pause').addEventListener('click', function(){
 	if (currentPlayer) {
 		currentPlayer.pause();
@@ -138,47 +171,15 @@ document.getElementById('vol-down').addEventListener('click', function(){
 	}
 });
 document.getElementById('next').addEventListener('click', function(){
-	if (currentPlayer) {
+	if (currentPlayer && currentTrack !== playlist.length -1) {
 		currentTrack++;
 		streamTrack(playlist[currentTrack]);
 	}
 });
 document.getElementById('prev').addEventListener('click', function(){
-	if (currentPlayer) {
+	if (currentPlayer && currentTrack !== 0) {
 		currentTrack--;
 		streamTrack(playlist[currentTrack])
 	}
 });
 document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
-
-function clearPlaylist(){
-	var tracks = document.getElementsByClassName('tracks');
-	playlist = [];
-	for (var i = 0; i < tracks.length; i++) {
-			console.log(tracks[i]);
-			tracks[i].remove();
-	}
-}
-
-function listenForTrackSelect(){
-	var tracks = document.getElementsByClassName('tracks');
-
-	for (var i = 0; i < tracks.length; i++) {
-		tracks[i].addEventListener('click', function(){
-			currentTrack = +this.id;
-			streamTrack(playlist[this.id]);
-		});
-	}
-}
-
-function highlightPlaying(){
-	var tracks = document.getElementsByClassName('tracks');
-
-	for (var i = 0; i < tracks.length; i++) {
-		if (+tracks[i].id === currentTrack) {
-			tracks[i].setAttribute('class', "tracks playing");
-		} else {
-			tracks[i].className = 'tracks';
-		}
-	}
-};

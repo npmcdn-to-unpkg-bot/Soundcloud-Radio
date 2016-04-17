@@ -46,3 +46,6 @@ artwork {
 .playing {
 	background-color: lightblue;
 }
+#next-page {
+	display: none;
+}

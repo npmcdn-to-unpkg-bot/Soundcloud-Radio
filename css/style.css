@@ -18,8 +18,8 @@ input, p {
 	margin-bottom: 10px;
 	margin-top: 0;
 }
-#track-seconds, #progress, #track-length{
-	display: inline;
+#progress{
+	display: none;
 	align-items: center;
 	padding-top: 10px;
 }
@@ -44,8 +44,12 @@ artwork {
 	right: 500px;
 }
 .playing {
-	background-color: lightblue;
+	background-color: orange;
 }
 #next-page {
 	display: none;
+}
+#seekbar {
+	/*display: none;*/
+	width:400px;
 }

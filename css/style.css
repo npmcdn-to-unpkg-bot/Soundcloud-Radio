@@ -29,19 +29,17 @@ input, p {
 	}
 }
 #playlist{
-	/*display: none;*/
-	/*align-items: right;*/
-	/*position: absolute;*/
-	/*top: 35px;*/
-	/*right: 150px;*/
+	text-align: center;
+	list-style-type: none;
 }
 #controls {
 	z-index: 1000;
+	margin-top: 10px;
 	margin-bottom: 10px;
 }
-artwork {
-	position: absolute;
-	right: 500px;
+#artwork {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 .playing {
 	background-color: orange;

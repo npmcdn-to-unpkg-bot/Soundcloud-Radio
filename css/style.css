@@ -43,3 +43,6 @@ artwork {
 	position: absolute;
 	right: 500px;
 }
+.playing {
+	background-color: lightblue;
+}

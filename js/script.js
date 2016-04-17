@@ -3,18 +3,18 @@ SC.initialize({
 });
 var inputField = document.getElementById('genre'),
     title = document.getElementById('title'),
-		trackInfo = document.getElementById('track-info'),
+		// trackInfo = document.getElementById('track-info'),
 		trackLength = document.getElementById('track-length'),
 		info = document.getElementById('info'),
 		trackSeconds = document.getElementById('track-seconds'),
 		progress = document.getElementById('progress'),
 		artwork = document.getElementById('artwork'),
 		nextPage = document.getElementById('next-page'),
-		searchQuery = 'genre',
 		nextPagePlaylist = [],
 		currentTrack = 0,
 		page_size = 200,
 		playlist = [],
+		trackDuration,
 		currentPlayer,
 		chosenGenre;
 
@@ -34,6 +34,7 @@ var createPlaylist = function(trackTitle, trackNum){
 	var trackTitle = document.createTextNode(trackTitle),
 			list = document.createElement('li'),
 			link = document.createElement('a');
+
 	link.setAttribute('href', "#");
 	list.setAttribute('id', trackNum);
 	list.className = 'tracks';
@@ -82,6 +83,7 @@ var streamTrack = function(track){
 		.then(function(player){
 			title.innerText = track.title;
 			info.style.display = 'inline-block';
+			progress.style.display = 'inline'
 			trackLength.innerText = msToTime(track.duration);
 			highlightPlaying();
 			displayArtwork(track.artwork_url)
@@ -90,8 +92,10 @@ var streamTrack = function(track){
 			player.options.protocols = ['http'];
 			player.play();
 
+			trackDuration = track.duration;
 			player.on('time', function(){
-				trackSeconds.innerText = msToTime(player.currentTime()) + ' / ';
+				trackSeconds.innerText = msToTime(player.currentTime());
+				seekbar.setAttribute('value', player.currentTime() / track.duration)
 			});
 
 			player.on('finish', function(){
@@ -106,12 +110,7 @@ var streamTrack = function(track){
 
 var search = function(event){
 	event.preventDefault();
-	if(searchQuery === 'genre'){
 		getGenre(inputField.value);
-	}
-	else if (searchQuery === 'playlist') {
-		getPlaylist();
-	}
 };
 
 function clearPlaylist(){
@@ -183,3 +182,7 @@ document.getElementById('prev').addEventListener('click', function(){
 	}
 });
 document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
+document.getElementById('seekbar').addEventListener('click', function (e) {
+		var x = e.offsetX;
+    currentPlayer.seek((trackDuration / 400) * x);
+});

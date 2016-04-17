@@ -12,6 +12,7 @@ input {
 #info {
 	display: none;
 	align-items: center;
+	text-align: center;
 }
 input, p {
 	width: 90%;

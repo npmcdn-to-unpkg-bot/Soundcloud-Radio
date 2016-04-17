@@ -59,6 +59,7 @@ var getGenre = function(genre){
 	SC.get('/tracks/', {genres: genre})
 		.then(function(tracks){
 			clearPlaylist();
+			console.log(tracks);
 			for (var i = 0; i < tracks.length; i++) {
 				if(tracks[i].streamable){
 					playlist.push(tracks[i]);
@@ -66,8 +67,12 @@ var getGenre = function(genre){
 				}
 			}
 			streamTrack(playlist[currentTrack]);
-			console.log(playlist[currentTrack]);
 		});
+}
+
+function displayArtwork(trackArtwork){
+	trackArtwork ? artwork.setAttribute('src', trackArtwork)
+		: artwork.style.display = 'none';
 }
 
 var streamTrack = function(track){
@@ -76,7 +81,8 @@ var streamTrack = function(track){
 			title.innerText = track.title;
 			info.style.display = 'inline-block';
 			trackLength.innerText = msToTime(track.duration);
-			artwork.setAttribute('src', track.artwork_url);
+			highlightPlaying();
+			displayArtwork(track.artwork_url)
 			currentPlayer = player;
 			player.setVolume(0.2);
 			player.options.protocols = ['http'];
@@ -87,9 +93,8 @@ var streamTrack = function(track){
 			});
 
 			player.on('finish', function(){
-				trackNum++;
-				getGenre(chosenGenre);
-				console.log('the track is finished');
+				currentTrack++;
+				streamTrack(playlist[currentTrack]);
 			});
 
 		  }).catch(function(){
@@ -102,6 +107,7 @@ var search = function(event){
 	chosenGenre = inputField.value;
 	getGenre(chosenGenre);
 	if (currentPlayer) {
+		clearPlaylist();
 		chosenGenre = '';
 		chosenGenre = inputField.value;
 		getGenre(chosenGenre);
@@ -143,13 +149,14 @@ document.getElementById('prev').addEventListener('click', function(){
 		streamTrack(playlist[currentTrack])
 	}
 });
+document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
 
 function clearPlaylist(){
-	playlist = [];
 	var tracks = document.getElementsByClassName('tracks');
+	playlist = [];
 	for (var i = 0; i < tracks.length; i++) {
-			var track = tracks[i];
-			track.remove();
+			console.log(tracks[i]);
+			tracks[i].remove();
 	}
 }
 
@@ -158,7 +165,20 @@ function listenForTrackSelect(){
 
 	for (var i = 0; i < tracks.length; i++) {
 		tracks[i].addEventListener('click', function(){
+			currentTrack = +this.id;
 			streamTrack(playlist[this.id]);
 		});
 	}
 }
+
+function highlightPlaying(){
+	var tracks = document.getElementsByClassName('tracks');
+
+	for (var i = 0; i < tracks.length; i++) {
+		if (+tracks[i].id === currentTrack) {
+			tracks[i].setAttribute('class', "tracks playing");
+		} else {
+			tracks[i].className = 'tracks';
+		}
+	}
+};

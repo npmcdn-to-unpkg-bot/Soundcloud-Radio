@@ -23,9 +23,9 @@ var inputField = document.getElementById('search'),
 
 function msToTime(d){
   var ml = parseInt((d%1000)/100),
-	    s = parseInt((d/1000)%60),
-	    m = parseInt((d/(1000*60))%60),
-	    h = parseInt((d/(1000*60*60))%24);
+      s = parseInt((d/1000)%60),
+      m = parseInt((d/(1000*60))%60),
+      h = parseInt((d/(1000*60*60))%24);
 
 	h = (h < 10) ? '0' + h : h;
 	m = (m < 10) ? '0' + m : m;

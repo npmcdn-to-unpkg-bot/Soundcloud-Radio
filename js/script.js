@@ -234,13 +234,13 @@ nextPage.addEventListener('click', function(){
 });
 
 previousPage.addEventListener('click', function(){
-	clearPlaylist();
-	if(currentPage === 2){
-		getGenre(currentGenre);
-	} else {
-		getJSON(nextHref[currentPage - 3]).then(function(data){
-	    organiseTracks(data.collection);
-	  });
-	  currentPage--;
-	}
+  clearPlaylist();
+  if(currentPage === 2){
+    getGenre(currentGenre);
+  } else {
+    getJSON(nextHref[currentPage - 3]).then(function(data){
+      organiseTracks(data.collection);
+    });
+    currentPage--;
+  }
 });

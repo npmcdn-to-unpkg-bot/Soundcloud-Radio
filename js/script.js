@@ -15,6 +15,7 @@ var inputField = document.getElementById('search'),
 		currentTrack = 0,
 		pageSize = 200,
 		currentPage = 1,
+    volume = 0.2,
 		nextHref = [],
 		playlist = [],
 		trackDuration,
@@ -23,9 +24,9 @@ var inputField = document.getElementById('search'),
 
 function msToTime(d){
   var ml = parseInt((d%1000)/100),
-	    s = parseInt((d/1000)%60),
-	    m = parseInt((d/(1000*60))%60),
-	    h = parseInt((d/(1000*60*60))%24);
+      s = parseInt((d/1000)%60),
+      m = parseInt((d/(1000*60))%60),
+      h = parseInt((d/(1000*60*60))%24);
 
 	h = (h < 10) ? '0' + h : h;
 	m = (m < 10) ? '0' + m : m;
@@ -107,7 +108,7 @@ function streamTrack(track){
       highlightPlaying();
       displayArtwork(track.artwork_url)
       currentPlayer = player;
-      player.setVolume(0.2);
+      player.setVolume(volume);
       volumeBar.setAttribute('value', player.getVolume());
       player.options.protocols = ['http'];
       player.play();
@@ -178,9 +179,11 @@ document.getElementById('play').addEventListener('click', function(){
 
 document.getElementById('vol-up').addEventListener('click', function(){
   if (currentPlayer && currentPlayer.getVolume() < 1) {
-    currentPlayer.setVolume(currentPlayer.getVolume() + 0.1);
+    volume += 0.1;
+    currentPlayer.setVolume(volume);
     if (currentPlayer.getVolume() > 1) {
       currentPlayer.setVolume(1);
+      volume = 1;
     }
     volumeBar.setAttribute('value', currentPlayer.getVolume());
   }
@@ -188,9 +191,11 @@ document.getElementById('vol-up').addEventListener('click', function(){
 
 document.getElementById('vol-down').addEventListener('click', function(){
   if (currentPlayer && currentPlayer.getVolume() > 0) {
-    currentPlayer.setVolume(currentPlayer.getVolume() - 0.1);
+    volume -= 0.1;
+    currentPlayer.setVolume(volume);
     if (currentPlayer.getVolume() < 0) {
       currentPlayer.setVolume(0);
+      volume = 0;
     }
     volumeBar.setAttribute('value', currentPlayer.getVolume());
   }
@@ -234,13 +239,13 @@ nextPage.addEventListener('click', function(){
 });
 
 previousPage.addEventListener('click', function(){
-	clearPlaylist();
-	if(currentPage === 2){
-		getGenre(currentGenre);
-	} else {
-		getJSON(nextHref[currentPage - 3]).then(function(data){
-	    organiseTracks(data.collection);
-	  });
-	  currentPage--;
-	}
+  clearPlaylist();
+  if(currentPage === 2){
+    getGenre(currentGenre);
+  } else {
+    getJSON(nextHref[currentPage - 3]).then(function(data){
+      organiseTracks(data.collection);
+    });
+    currentPage--;
+  }
 });

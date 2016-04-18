@@ -79,3 +79,6 @@ input, p {
 #previous-page {
 	display: none;
 }
+#volume-bar {
+	width: 70px;
+}

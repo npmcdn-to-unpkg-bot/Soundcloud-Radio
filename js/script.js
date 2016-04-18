@@ -1,5 +1,7 @@
+'use strict';
+
 SC.initialize({
-	client_id: '35ae1f409c6f36d7cd493f3974c34135'
+  client_id: '35ae1f409c6f36d7cd493f3974c34135'
 });
 
 var inputField = document.getElementById('search'),
@@ -10,7 +12,7 @@ var inputField = document.getElementById('search'),
 		artwork = document.getElementById('artwork'),
 		nextPage = document.getElementById('next-page'),
 		previousPage = document.getElementById('previous-page'),
-		nextPlaylist = [],
+		volumeBar = document.getElementById('volume-bar'),
 		currentTrack = 0,
 		page_size = 200,
 		currentPage = 1,
@@ -21,19 +23,19 @@ var inputField = document.getElementById('search'),
 		currentGenre;
 
 function msToTime(d){
-    var ml = parseInt((d%1000)/100),
-				s = parseInt((d/1000)%60),
-				m = parseInt((d/(1000*60))%60),
-				h = parseInt((d/(1000*60*60))%24);
+	var ml = parseInt((d%1000)/100),
+	s = parseInt((d/1000)%60),
+	m = parseInt((d/(1000*60))%60),
+	h = parseInt((d/(1000*60*60))%24);
 
-    h = (h < 10) ? '0' + h : h;
-    m = (m < 10) ? '0' + m : m;
-    s = (s < 10) ? '0' + s : s;
+	h = (h < 10) ? '0' + h : h;
+	m = (m < 10) ? '0' + m : m;
+	s = (s < 10) ? '0' + s : s;
 
-    return h + ':' + m + ':' + s;
+	return h + ':' + m + ':' + s;
 }
 
-var createPlaylist = function(trackTitle, trackNum){
+function createPlaylist(trackTitle, trackNum){
 	var trackTitle = document.createTextNode(trackTitle),
 			list = document.createElement('li'),
 			link = document.createElement('a');
@@ -47,24 +49,24 @@ var createPlaylist = function(trackTitle, trackNum){
 	listenForTrackSelect();
 }
 
-var getJSON = function(url) {
-  return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url, true);
-    xhr.responseType = 'json';
-    xhr.onload = function() {
-      var status = xhr.status;
-      if (status == 200) {
-        resolve(xhr.response);
-      } else {
-        reject(status);
-      }
-    };
-    xhr.send();
-  });
+function getJSON(url) {
+	return new Promise(function(resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('get', url, true);
+		xhr.responseType = 'json';
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status == 200) {
+				resolve(xhr.response);
+			} else {
+				reject(status);
+			}
+		};
+		xhr.send();
+	});
 };
 
-var getGenre = function(genre){
+function getGenre(genre){
 	SC.get('/tracks/', {genres: genre, limit: page_size,
 		linked_partitioning: currentPage})
 		.then(function(tracks){
@@ -90,7 +92,7 @@ function displayArtwork(trackArtwork){
 		: artwork.setAttribute('src', 'img/image-filler.svg');
 }
 
-var streamTrack = function(track){
+function streamTrack(track){
 	SC.stream('/tracks/' + track.id)
 		.then(function(player){
 			if(!track.streamable){
@@ -99,46 +101,45 @@ var streamTrack = function(track){
 			}
 			title.innerText = track.title;
 			info.style.display = 'inline-block';
-			progress.style.display = 'inline'
+			progress.style.display = 'inline';
 			trackLength.innerText = msToTime(track.duration);
 			highlightPlaying();
 			displayArtwork(track.artwork_url)
 			currentPlayer = player;
 			player.setVolume(0.2);
+			volumeBar.setAttribute('value', player.getVolume());
 			player.options.protocols = ['http'];
 			player.play();
-
 			trackDuration = track.duration;
 			player.on('time', function(){
 				trackSeconds.innerText = msToTime(player.currentTime());
 				seekbar.setAttribute('value', player.currentTime() / track.duration)
 			});
-
 			player.on('finish', function(){
 				currentTrack++;
 				streamTrack(playlist[currentTrack]);
 			});
 
-		  }).catch(function(){
+			}).catch(function(){
 				console.log(arguments);
 			});
-};
+}
 
-var search = function(event){
+function search(event){
 	event.preventDefault();
 	currentGenre = inputField.value;
 	getGenre(currentGenre);
-};
+}
 
 function clearPlaylist(){
 	playlist = [];
 	currentTrack = 0;
 		var pl = document.getElementById('playlist');
-	  if (pl) {
-	    while (pl.firstChild) {
-	      pl.removeChild(pl.firstChild);
-	    }
-	  }
+		if (pl) {
+			while (pl.firstChild) {
+				pl.removeChild(pl.firstChild);
+			}
+		}
 }
 
 function listenForTrackSelect(){
@@ -160,7 +161,7 @@ function highlightPlaying(){
 			tracks[i].className = 'tracks';
 		}
 	}
-};
+}
 
 document.getElementById('searchForm').addEventListener('submit', search);
 
@@ -177,16 +178,16 @@ document.getElementById('play').addEventListener('click', function(){
 });
 
 document.getElementById('vol-up').addEventListener('click', function(){
-	if (currentPlayer) {
+	if (currentPlayer && currentPlayer.getVolume() < 0.9) {
 		currentPlayer.setVolume(currentPlayer.getVolume() + 0.1);
-		console.log(currentPlayer.getVolume());
+		volumeBar.setAttribute('value', currentPlayer.getVolume());
 	}
 });
 
 document.getElementById('vol-down').addEventListener('click', function(){
-	if (currentPlayer) {
+	if (currentPlayer && currentPlayer.getVolume() > 0.1) {
 		currentPlayer.setVolume(currentPlayer.getVolume() - 0.1);
-		console.log(currentPlayer.getVolume());
+		volumeBar.setAttribute('value', currentPlayer.getVolume());
 	}
 });
 
@@ -206,9 +207,15 @@ document.getElementById('prev').addEventListener('click', function(){
 
 document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
 
-document.getElementById('seekbar').addEventListener('click', function (e) {
-		var x = e.offsetX;
-    currentPlayer.seek((trackDuration / 400) * x);
+document.getElementById('seekbar').addEventListener('click', function (e){
+  var x = e.offsetX;
+  currentPlayer.seek((trackDuration / 400) * x);
+});
+
+volumeBar.addEventListener('click', function(e){
+	var x = e.offsetX;
+  currentPlayer.setVolume(x / 70);
+  volumeBar.setAttribute('value', currentPlayer.getVolume());
 });
 
 nextPage.addEventListener('click', function(){
@@ -223,10 +230,6 @@ nextPage.addEventListener('click', function(){
 
 previousPage.addEventListener('click', function(){
 	clearPlaylist();
-	// getJSON(nextHref[currentPage - 2]).then(function(data){
-	// 	nextHref.push(data.next_href);
-	// 	organiseTracks(data.collection);
-	// });
 	getGenre(currentGenre)
 	currentPage--;
 });

@@ -178,15 +178,21 @@ document.getElementById('play').addEventListener('click', function(){
 });
 
 document.getElementById('vol-up').addEventListener('click', function(){
-	if (currentPlayer && currentPlayer.getVolume() < 0.9) {
+	if (currentPlayer && currentPlayer.getVolume() < 1) {
 		currentPlayer.setVolume(currentPlayer.getVolume() + 0.1);
+		if (currentPlayer.getVolume() > 1) {
+			currentPlayer.setVolume(1);
+		}
 		volumeBar.setAttribute('value', currentPlayer.getVolume());
 	}
 });
 
 document.getElementById('vol-down').addEventListener('click', function(){
-	if (currentPlayer && currentPlayer.getVolume() > 0.1) {
+	if (currentPlayer && currentPlayer.getVolume() > 0) {
 		currentPlayer.setVolume(currentPlayer.getVolume() - 0.1);
+		if (currentPlayer.getVolume() < 0) {
+			currentPlayer.setVolume(0);
+		}
 		volumeBar.setAttribute('value', currentPlayer.getVolume());
 	}
 });

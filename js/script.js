@@ -2,19 +2,23 @@ SC.initialize({
 	client_id: '35ae1f409c6f36d7cd493f3974c34135'
 });
 
-var inputField = document.getElementById('genre'),
+var inputField = document.getElementById('search'),
 		trackLength = document.getElementById('track-length'),
 		info = document.getElementById('info'),
 		trackSeconds = document.getElementById('track-seconds'),
 		progress = document.getElementById('progress'),
 		artwork = document.getElementById('artwork'),
 		nextPage = document.getElementById('next-page'),
+		previousPage = document.getElementById('previous-page'),
 		nextPlaylist = [],
 		currentTrack = 0,
 		page_size = 200,
+		currentPage = 1,
+		nextHref = [],
 		playlist = [],
 		trackDuration,
-		currentPlayer;
+		currentPlayer,
+		currentGenre;
 
 function msToTime(d){
     var ml = parseInt((d%1000)/100),
@@ -43,17 +47,6 @@ var createPlaylist = function(trackTitle, trackNum){
 	listenForTrackSelect();
 }
 
-var getPlaylist = function(playlist){
-	SC.get('/playlists/2050462').then(function(playlist){
-		var collection = [];
-		playlist.tracks.forEach(function(track){
-			console.log(track);
-			collection.push(track);
-			organiseTracks(collection);
-		});
-	});
-}
-
 var getJSON = function(url) {
   return new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest();
@@ -72,20 +65,22 @@ var getJSON = function(url) {
 };
 
 var getGenre = function(genre){
-	SC.get('/tracks/', {genres: genre, limit: page_size, linked_partitioning: 1})
+	SC.get('/tracks/', {genres: genre, limit: page_size,
+		linked_partitioning: currentPage})
 		.then(function(tracks){
 			clearPlaylist();
-			nextPlaylist = getJSON(tracks.next_href);
-			console.log(nextPlaylist);
+			getJSON(tracks.next_href).then(function(data){
+				nextHref.push(data.next_href);
+			});
 			organiseTracks(tracks.collection);
-			nextPage.style.display = 'inline';
+			nextPage.style.visibility = 'visible';
 		});
 }
 
 function organiseTracks(collection){
 	for (var i = 0; i < collection.length; i++) {
-		playlist.push(collection[i]);
-		createPlaylist(playlist[i].title, i);
+			playlist.push(collection[i]);
+			createPlaylist(playlist[i].title, i);
 	}
 	streamTrack(playlist[currentTrack]);
 }
@@ -98,6 +93,10 @@ function displayArtwork(trackArtwork){
 var streamTrack = function(track){
 	SC.stream('/tracks/' + track.id)
 		.then(function(player){
+			if(!track.streamable){
+				currentTrack++;
+				streamTrack(playlist[currentTrack]);
+			}
 			title.innerText = track.title;
 			info.style.display = 'inline-block';
 			progress.style.display = 'inline'
@@ -127,7 +126,8 @@ var streamTrack = function(track){
 
 var search = function(event){
 	event.preventDefault();
-		getGenre(inputField.value);
+	currentGenre = inputField.value;
+	getGenre(currentGenre);
 };
 
 function clearPlaylist(){
@@ -209,4 +209,24 @@ document.getElementById('clear-playlist').addEventListener('click', clearPlaylis
 document.getElementById('seekbar').addEventListener('click', function (e) {
 		var x = e.offsetX;
     currentPlayer.seek((trackDuration / 400) * x);
+});
+
+nextPage.addEventListener('click', function(){
+	clearPlaylist();
+	getJSON(nextHref[currentPage - 1]).then(function(data){
+		nextHref.push(data.next_href);
+		organiseTracks(data.collection);
+	});
+	previousPage.style.display = 'inline';
+	currentPage++;
+});
+
+previousPage.addEventListener('click', function(){
+	clearPlaylist();
+	// getJSON(nextHref[currentPage - 2]).then(function(data){
+	// 	nextHref.push(data.next_href);
+	// 	organiseTracks(data.collection);
+	// });
+	getGenre(currentGenre)
+	currentPage--;
 });

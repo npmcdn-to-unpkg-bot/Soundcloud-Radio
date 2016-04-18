@@ -36,16 +36,16 @@ function msToTime(d){
 	return h + ':' + m + ':' + s;
 }
 
-function createPlaylist(trackTitle, trackNum){
-	var trackTitle = document.createTextNode(trackTitle),
+function createPlaylist(trackTitle, trackId){
+	var trackName = document.createTextNode(trackTitle),
       list = document.createElement('li'),
       link = document.createElement('a');
 
   link.setAttribute('href', '#');
-  list.setAttribute('id', trackNum);
+  list.setAttribute('id', trackId);
   list.className = 'tracks';
   list.appendChild(link);
-  link.appendChild(trackTitle);
+  link.appendChild(trackName);
   document.getElementById('playlist').appendChild(list);
   listenForTrackSelect();
 }
@@ -65,7 +65,7 @@ function getJSON(url) {
     };
     xhr.send();
   });
-};
+}
 
 function getGenre(genre){
   SC.get('/tracks/', {genres: genre, limit: page_size,

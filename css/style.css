@@ -82,3 +82,6 @@ input, p {
 #volume-bar {
 	width: 70px;
 }
+#nav {
+	width: 100%;
+}

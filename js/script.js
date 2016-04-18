@@ -13,6 +13,7 @@ var inputField = document.getElementById('search'),
 		nextPage = document.getElementById('next-page'),
 		previousPage = document.getElementById('previous-page'),
 		volumeBar = document.getElementById('volume-bar'),
+		tracks = document.getElementsByClassName('tracks'),
 		currentTrack = 0,
 		page_size = 200,
 		currentPage = 1,
@@ -145,7 +146,6 @@ function clearPlaylist(){
 }
 
 function listenForTrackSelect(){
-	var tracks = document.getElementsByClassName('tracks');
 	for (var i = 0; i < tracks.length; i++) {
 		tracks[i].addEventListener('click', function(){
 			currentTrack = +this.id;
@@ -155,7 +155,6 @@ function listenForTrackSelect(){
 }
 
 function highlightPlaying(){
-	var tracks = document.getElementsByClassName('tracks');
 	for (var i = 0; i < tracks.length; i++) {
 		if (+tracks[i].id === currentTrack) {
 			tracks[i].setAttribute('class', 'tracks playing');

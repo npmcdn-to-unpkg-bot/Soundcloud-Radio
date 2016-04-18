@@ -2,7 +2,13 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	font-family: sans-serif;
+	/*font-family: sans-serif;*/
+
+	/*background-image: -webkit-linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
+	/*background-image: linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
+
+
+	font-family: "Lucida Console", Monaco, monospace;
 }
 input {
 	font-size: 20px;
@@ -15,6 +21,7 @@ input {
 
 	&:focus {
 			outline: none;
+			color: transparent;
 	}
 
 }
@@ -59,8 +66,8 @@ input, p {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-.playing {
-	background-color: orange;
+.playing > a{
+	background-color: lightblue;
 }
 #seekbar {
 	width:400px;

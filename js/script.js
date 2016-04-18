@@ -23,7 +23,7 @@ var inputField = document.getElementById('search'),
 		currentGenre;
 
 function msToTime(d){
-	var ml = parseInt((d%1000)/100),
+  var ml = parseInt((d%1000)/100),
 	s = parseInt((d/1000)%60),
 	m = parseInt((d/(1000*60))%60),
 	h = parseInt((d/(1000*60*60))%24);
@@ -37,52 +37,54 @@ function msToTime(d){
 
 function createPlaylist(trackTitle, trackNum){
 	var trackTitle = document.createTextNode(trackTitle),
-			list = document.createElement('li'),
-			link = document.createElement('a');
+      list = document.createElement('li'),
+      link = document.createElement('a');
 
-	link.setAttribute('href', '#');
-	list.setAttribute('id', trackNum);
-	list.className = 'tracks';
-	list.appendChild(link);
-	link.appendChild(trackTitle);
-	document.getElementById('playlist').appendChild(list);
-	listenForTrackSelect();
+  link.setAttribute('href', '#');
+  list.setAttribute('id', trackNum);
+  list.className = 'tracks';
+  list.appendChild(link);
+  link.appendChild(trackTitle);
+  document.getElementById('playlist').appendChild(list);
+  listenForTrackSelect();
 }
 
 function getJSON(url) {
-	return new Promise(function(resolve, reject) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('get', url, true);
-		xhr.responseType = 'json';
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status == 200) {
-				resolve(xhr.response);
-			} else {
-				reject(status);
-			}
-		};
-		xhr.send();
-	});
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status == 200) {
+        resolve(xhr.response);
+      } else {
+        reject(status);
+      }
+    };
+    xhr.send();
+  });
 };
 
 function getGenre(genre){
-	SC.get('/tracks/', {genres: genre, limit: page_size,
-		linked_partitioning: currentPage})
-		.then(function(tracks){
-			clearPlaylist();
-			getJSON(tracks.next_href).then(function(data){
-				nextHref.push(data.next_href);
-			});
-			organiseTracks(tracks.collection);
-			nextPage.style.visibility = 'visible';
-		});
+  SC.get('/tracks/', {genres: genre, limit: page_size,
+    linked_partitioning: currentPage})
+    .then(function(tracks){
+      clearPlaylist();
+			if(tracks.next_href){
+				getJSON(tracks.next_href).then(function(data){
+						nextHref.push(data.next_href);
+						nextPage.style.visibility = 'visible';
+	      });
+			}
+      organiseTracks(tracks.collection);
+    });
 }
 
 function organiseTracks(collection){
-	for (var i = 0; i < collection.length; i++) {
-			playlist.push(collection[i]);
-			createPlaylist(playlist[i].title, i);
+  for (var i = 0; i < collection.length; i++) {
+      playlist.push(collection[i]);
+      createPlaylist(playlist[i].title, i);
 	}
 	streamTrack(playlist[currentTrack]);
 }

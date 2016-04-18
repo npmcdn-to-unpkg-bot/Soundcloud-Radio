@@ -1,21 +1,15 @@
 //test features
 
-var getJSON = function(url) {
-  return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url, true);
-    xhr.responseType = 'json';
-    xhr.onload = function() {
-      var status = xhr.status;
-      if (status == 200) {
-        resolve(xhr.response);
-      } else {
-        reject(status);
-      }
-    };
-    xhr.send();
-  });
-};
+var getPlaylist = function(playlist){
+	SC.get('/playlists/2050462').then(function(playlist){
+		var collection = [];
+		playlist.tracks.forEach(function(track){
+			console.log(track);
+			collection.push(track);
+			organiseTracks(collection);
+		});
+	});
+}
 
 // linked_partitioning param returns link for next page of results
 // use getJson to use it

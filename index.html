@@ -7,7 +7,7 @@
   </head>
   <body>
     <form id="searchForm">
-      <input type="text" id="genre" placeholder="What Genre?" autofocus />
+      <input type="text" id="search" placeholder="What Genre?" autofocus />
       <!-- <select id="search-query">
         <option value="genre" selected="selected">Genre</option>
         <option value="playlist">Playlist</option>
@@ -33,8 +33,13 @@
       <progress id="seekbar" value="0" max="1"></progress>
       <span id="track-length"></span>
     </div>
-    <ul id="playlist"></ul>
-    <!-- <a href="#" id="next-page">Next Page</a> coming soon -->
+    <ol id="playlist"></ol>
+    <table style="width:100%">
+      <tr>
+        <td id="previous-page"><a href="#">Previous Page</a></td>
+        <td id="next-page"><a href="#">Next Page</a></td>
+      </tr>
+    </table>
     <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
     <script src="js/script.js"></script>
   </body>

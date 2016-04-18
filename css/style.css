@@ -3,12 +3,29 @@ body {
 	flex-direction: column;
 	align-items: center;
 	font-family: sans-serif;
-	/*padding-top: 40px;*/
-	/*padding-left: 40px;*/
 }
 input {
 	font-size: 20px;
+	text-align: center;
+
+	/*border: none;*/
+	color: transparent;
+	text-shadow: 0 0 0 gray;
+	text-align: center;
+
+	&:focus {
+			outline: none;
+	}
+
 }
+/* webkit */
+::-webkit-input-placeholder {
+	text-align:left;
+}
+/* mozilla */
+input:-moz-placeholder {
+	 text-align:left;
+ }
 #info {
 	display: none;
 	align-items: center;
@@ -45,10 +62,13 @@ input, p {
 .playing {
 	background-color: orange;
 }
-#next-page {
-	display: none;
-}
 #seekbar {
-	/*display: none;*/
 	width:400px;
+}
+#next-page {
+	text-align: right;
+	visibility: hidden;
+}
+#previous-page {
+	display: none;
 }

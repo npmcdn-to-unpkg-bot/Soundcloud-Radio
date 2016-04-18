@@ -3,24 +3,25 @@ SC.initialize({
 });
 
 var inputField = document.getElementById('search'),
-		trackLength = document.getElementById('track-length'),
-		info = document.getElementById('info'),
-		trackSeconds = document.getElementById('track-seconds'),
-		progress = document.getElementById('progress'),
-		artwork = document.getElementById('artwork'),
-		nextPage = document.getElementById('next-page'),
-		previousPage = document.getElementById('previous-page'),
-		volumeBar = document.getElementById('volume-bar'),
-		tracks = document.getElementsByClassName('tracks'),
-		currentTrack = 0,
-		pageSize = 200,
-		currentPage = 1,
+    trackLength = document.getElementById('track-length'),
+    info = document.getElementById('info'),
+    trackSeconds = document.getElementById('track-seconds'),
+    progress = document.getElementById('progress'),
+    artwork = document.getElementById('artwork'),
+    nextPage = document.getElementById('next-page'),
+    previousPage = document.getElementById('previous-page'),
+    volumeBar = document.getElementById('volume-bar'),
+    tracks = document.getElementsByClassName('tracks'),
+    searchQuery = document.getElementById('search-query'),
+    currentTrack = 0,
+    pageSize = 200,
+    currentPage = 1,
     volume = 0.2,
-		nextHref = [],
-		playlist = [],
-		trackDuration,
-		currentPlayer,
-		currentGenre;
+    nextHref = [],
+    playlist = [],
+    trackDuration,
+    currentPlayer,
+    currentSearch;
 
 function msToTime(d){
   var ml = parseInt((d%1000)/100),
@@ -28,9 +29,9 @@ function msToTime(d){
       m = parseInt((d/(1000*60))%60),
       h = parseInt((d/(1000*60*60))%24);
 
-	h = (h < 10) ? '0' + h : h;
-	m = (m < 10) ? '0' + m : m;
-	s = (s < 10) ? '0' + s : s;
+  h = (h < 10) ? '0' + h : h;
+  m = (m < 10) ? '0' + m : m;
+  s = (s < 10) ? '0' + s : s;
 
 	return h + ':' + m + ':' + s;
 }
@@ -66,9 +67,11 @@ function getJSON(url) {
   });
 }
 
-function getGenre(genre){
-  SC.get('/tracks/', {genres: genre, limit: pageSize,
+function getCollection(genre, title){
+
+  SC.get('/tracks/', {genres: genre, q: title, limit: pageSize,
     linked_partitioning: currentPage})
+
     .then(function(tracks){
       clearPlaylist();
       if(tracks.next_href){
@@ -129,8 +132,13 @@ function streamTrack(track){
 
 function search(event){
   event.preventDefault();
-  currentGenre = inputField.value;
-  getGenre(currentGenre);
+  currentSearch = inputField.value;
+  if (searchQuery.value === 'genre') {
+    getCollection(inputField.value);
+  }
+  else if (searchQuery.value === 'title') {
+    getCollection('',inputField.value);
+  }
 }
 
 function clearPlaylist(){
@@ -241,7 +249,8 @@ nextPage.addEventListener('click', function(){
 previousPage.addEventListener('click', function(){
   clearPlaylist();
   if(currentPage === 2){
-    getGenre(currentGenre);
+    getCollection(currentSearch);
+    previousPage.style.visibility = 'hidden';
   } else {
     getJSON(nextHref[currentPage - 3]).then(function(data){
       organiseTracks(data.collection);

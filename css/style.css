@@ -2,28 +2,21 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	/*font-family: sans-serif;*/
-
+	font-family: "Lucida Console", Monaco, monospace;
 	/*background-image: -webkit-linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 	/*background-image: linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
-
-
-	font-family: "Lucida Console", Monaco, monospace;
 }
 input {
 	font-size: 20px;
 	text-align: center;
-
 	/*border: none;*/
 	color: transparent;
 	text-shadow: 0 0 0 gray;
 	text-align: center;
-
 	&:focus {
 			outline: none;
 			color: transparent;
 	}
-
 }
 /* webkit */
 ::-webkit-input-placeholder {

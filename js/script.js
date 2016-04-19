@@ -11,7 +11,7 @@ var inputField = document.getElementById('search'),
     nextPage = document.getElementById('next-page'),
     previousPage = document.getElementById('previous-page'),
     volumeBar = document.getElementById('volume-bar'),
-    tracks = document.getElementsByClassName('tracks'),
+    tracks = document.querySelectorAll('.tracks'),
     searchQuery = document.getElementById('search-query'),
     currentTrack = 0,
     pageSize = 200,
@@ -36,18 +36,21 @@ function msToTime(d){
 	return h + ':' + m + ':' + s;
 }
 
-function createPlaylist(trackTitle, trackId){
-  var trackName = document.createTextNode(trackTitle),
-      list = document.createElement('li'),
-      link = document.createElement('a');
+function createPlaylist(trackTitle, artwork, trackId){
+  var song = document.createElement('div'),
+      songInfo = document.createElement('div'),
+      songTitle = document.createTextNode(trackTitle),
+      songLink = document.createElement('a');
 
-  link.setAttribute('href', '#');
-  list.setAttribute('id', trackId);
-  list.className = 'tracks';
-  list.appendChild(link);
-  link.appendChild(trackName);
-  document.getElementById('playlist').appendChild(list);
-  listenForTrackSelect();
+  song.style.backgroundImage = `url(${artwork})`;
+  song.className = 'track';
+  song.setAttribute('playlist-id', trackId)
+  song.appendChild(songInfo);
+  songInfo.className = 'song-info';
+  songLink.appendChild(songTitle);
+  songLink.setAttribute('href', '#');
+  songInfo.appendChild(songLink);
+  document.getElementById('playlist').appendChild(song);
 }
 
 function getJSON(url) {
@@ -67,11 +70,9 @@ function getJSON(url) {
   });
 }
 
-function getCollection(genre, title){
-
-  SC.get('/tracks/', {genres: genre, q: title, limit: pageSize,
+function getCollection(genre, keyword){
+  SC.get('/tracks/', {genres: genre, q: keyword, limit: pageSize,
     linked_partitioning: currentPage})
-
     .then(function(tracks){
       clearPlaylist();
       if(tracks.next_href){
@@ -81,15 +82,21 @@ function getCollection(genre, title){
         });
       }
       organiseTracks(tracks.collection);
+      createBackground(tracks.collection.artwork_url);
     });
 }
 
 function organiseTracks(collection){
   for (var i = 0; i < collection.length; i++) {
     playlist.push(collection[i]);
-    createPlaylist(playlist[i].title, i);
+    createPlaylist(playlist[i].title, playlist[i].artwork_url, i);
   }
   streamTrack(playlist[currentTrack]);
+}
+
+function createBackground(artwork){
+  artwork ? body.setAttribute('background-image', artwork)
+    : body.setAttribute('background-image', artwork);
 }
 
 function displayArtwork(trackArtwork){
@@ -108,7 +115,6 @@ function streamTrack(track){
       info.style.display = 'inline-block';
       progress.style.display = 'inline';
       trackLength.innerText = msToTime(track.duration);
-      highlightPlaying();
       displayArtwork(track.artwork_url)
       currentPlayer = player;
       player.setVolume(volume);
@@ -136,7 +142,7 @@ function search(event){
   if (searchQuery.value === 'genre') {
     getCollection(inputField.value);
   }
-  else if (searchQuery.value === 'title') {
+  else if (searchQuery.value === 'keyword') {
     getCollection('',inputField.value);
   }
 }
@@ -152,24 +158,12 @@ function clearPlaylist(){
   }
 }
 
-function listenForTrackSelect(){
-  for (var i = 0; i < tracks.length; i++) {
-    tracks[i].addEventListener('click', function(){
-      currentTrack = +this.id;
-      streamTrack(playlist[this.id]);
-    });
+document.querySelector('body').addEventListener('click', function(event) {
+  if (event.target.tagName.toLowerCase() === 'div') {
+    currentTrack = +event.target.getAttribute('playlist-id');
+    streamTrack(playlist[currentTrack]);
   }
-}
-
-function highlightPlaying(){
-  for (var i = 0; i < tracks.length; i++) {
-    if (+tracks[i].id === currentTrack) {
-      tracks[i].setAttribute('class', 'tracks playing');
-    } else {
-      tracks[i].className = 'tracks';
-    }
-  }
-}
+});
 
 document.getElementById('searchForm').addEventListener('submit', search);
 

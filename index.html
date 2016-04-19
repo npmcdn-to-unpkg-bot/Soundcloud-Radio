@@ -8,11 +8,12 @@
   <body>
     <form id="searchForm">
       <input type="text" id="search" placeholder="What Genre?" autofocus />
-      <select id="search-query">
+      Search By:<select id="search-query">
         <option value="genre" selected="selected">Genre</option>
-        <option value="title">Track Title</option>
+        <option value="keyword">Keyword</option>
       </select>
     </form>
+    <!-- <button id="foo" type="button">Foo</button> -->
     <img id="artwork" />
     <div id="info">
       <span id="title"></span>
@@ -33,7 +34,7 @@
       <progress id="seekbar" value="0" max="1"></progress>
       <span id="track-length"></span>
     </div>
-    <ol id="playlist"></ol>
+    <ul id="playlist"></ul>
     <table id="nav">
       <tr>
         <td id="previous-page"><a href="#">Previous Page</a></td>

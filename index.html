@@ -13,7 +13,6 @@
         <option value="keyword">Keyword</option>
       </select>
     </form>
-    <!-- <button id="foo" type="button">Foo</button> -->
     <img id="artwork" />
     <div id="info">
       <span id="title"></span>
@@ -26,21 +25,26 @@
         <button id="vol-down" type="button">Vol -</button>
         <button id="vol-up" type="button">Vol +</button>
         <button id="clear-playlist" type="button">Clear Playlist</button>
-        -<progress id="volume-bar" value="0" max="1"></progress>+
+        <progress id="volume-bar" value="0" max="1"></progress>
       </div>
     </div>
+
     <div id="progress">
       <span id="track-seconds"></span>
       <progress id="seekbar" value="0" max="1"></progress>
       <span id="track-length"></span>
     </div>
-    <ul id="playlist"></ul>
+    <div class="playlist-container">
+      <ul id="playlist"></ul>
+    </div>
+
     <table id="nav">
       <tr>
         <td id="previous-page"><a href="#">Previous Page</a></td>
         <td id="next-page"><a href="#">Next Page</a></td>
       </tr>
     </table>
+    <footer></footer>
     <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
     <script src="js/script.js"></script>
   </body>

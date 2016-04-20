@@ -52,7 +52,6 @@ function createPlaylist(trackTitle, artwork, user, trackId){
   song.style.backgroundImage = `url(${artwork})`;
   song.className = 'track';
   song.setAttribute('playlist-id', trackId);
-  songLink.setAttribute('href', '#');
   songInfo.appendChild(songLink);
   song.appendChild(songInfo);
   songInfo.className = 'song-info';
@@ -121,7 +120,7 @@ function streamTrack(track){
       info.style.display = 'inline-block';
       progress.style.display = 'inline';
       trackLength.innerText = msToTime(track.duration);
-      displayArtwork(track.artwork_url)
+      // displayArtwork(track.artwork_url)
       currentPlayer = player;
       player.setVolume(volume);
       volumeBar.setAttribute('value', player.getVolume());

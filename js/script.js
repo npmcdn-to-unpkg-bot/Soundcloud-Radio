@@ -11,17 +11,21 @@ var inputField = document.getElementById('search'),
     nextPage = document.getElementById('next-page'),
     previousPage = document.getElementById('previous-page'),
     volumeBar = document.getElementById('volume-bar'),
-    tracks = document.querySelectorAll('.tracks'),
+    tracks = document.getElementsByClassName('track'),
     searchQuery = document.getElementById('search-query'),
     currentTrack = 0,
     pageSize = 200,
     currentPage = 1,
-    volume = 0.2,
+    volume = 0.3,
     nextHref = [],
     playlist = [],
     trackDuration,
     currentPlayer,
     currentSearch;
+
+String.prototype.prepend = function(string){
+  return string + this;
+}
 
 function msToTime(d){
   var ml = parseInt((d%1000)/100),
@@ -36,24 +40,31 @@ function msToTime(d){
 	return h + ':' + m + ':' + s;
 }
 
-function createPlaylist(trackTitle, artwork, trackId){
+function createPlaylist(trackTitle, artwork, user, trackId){
+  artwork = artwork || 'img/image-filler.png';
   var song = document.createElement('div'),
       songInfo = document.createElement('div'),
       songTitle = document.createTextNode(trackTitle),
       songLink = document.createElement('a');
+      userLink = document.createElement('a');
+      username = document.createTextNode(user);
 
   song.style.backgroundImage = `url(${artwork})`;
   song.className = 'track';
-  song.setAttribute('playlist-id', trackId)
+  song.setAttribute('playlist-id', trackId);
+  songLink.setAttribute('href', '#');
+  songInfo.appendChild(songLink);
   song.appendChild(songInfo);
   songInfo.className = 'song-info';
   songLink.appendChild(songTitle);
-  songLink.setAttribute('href', '#');
-  songInfo.appendChild(songLink);
+  userLink.appendChild(username);
+  userLink.className = 'user';
+  song.appendChild(userLink);
+
   document.getElementById('playlist').appendChild(song);
 }
 
-function getJSON(url) {
+function getJSON(url){
   return new Promise(function(resolve, reject){
     var xhr = new XMLHttpRequest();
     xhr.open('get', url, true);
@@ -62,7 +73,7 @@ function getJSON(url) {
       var status = xhr.status;
       if (status == 200){
         resolve(xhr.response);
-      } else {
+      } else{
         reject(status);
       }
     };
@@ -71,7 +82,7 @@ function getJSON(url) {
 }
 
 function getCollection(genre, keyword){
-  SC.get('/tracks/', {genres: genre, q: keyword, limit: pageSize,
+  SC.get('/tracks/',{genres: genre, q: keyword, limit: pageSize,
     linked_partitioning: currentPage})
     .then(function(tracks){
       clearPlaylist();
@@ -82,21 +93,16 @@ function getCollection(genre, keyword){
         });
       }
       organiseTracks(tracks.collection);
-      createBackground(tracks.collection.artwork_url);
     });
 }
 
 function organiseTracks(collection){
-  for (var i = 0; i < collection.length; i++) {
+  for (var i = 0; i < collection.length; i++){
     playlist.push(collection[i]);
-    createPlaylist(playlist[i].title, playlist[i].artwork_url, i);
+    createPlaylist(playlist[i].title, playlist[i].artwork_url,
+      playlist[i].user.username, i);
   }
   streamTrack(playlist[currentTrack]);
-}
-
-function createBackground(artwork){
-  artwork ? body.setAttribute('background-image', artwork)
-    : body.setAttribute('background-image', artwork);
 }
 
 function displayArtwork(trackArtwork){
@@ -122,15 +128,15 @@ function streamTrack(track){
       player.options.protocols = ['http'];
       player.play();
       trackDuration = track.duration;
+      highlightPlaying();
       player.on('time', function(){
         trackSeconds.innerText = msToTime(player.currentTime());
-        seekbar.setAttribute('value', player.currentTime() / track.duration)
+        seekbar.setAttribute('value', player.currentTime() / track.duration);
       });
       player.on('finish', function(){
         currentTrack++;
         streamTrack(playlist[currentTrack]);
       });
-
       }).catch(function(){
         console.log(arguments);
       });
@@ -139,10 +145,10 @@ function streamTrack(track){
 function search(event){
   event.preventDefault();
   currentSearch = inputField.value;
-  if (searchQuery.value === 'genre') {
+  if (searchQuery.value === 'genre'){
     getCollection(inputField.value);
   }
-  else if (searchQuery.value === 'keyword') {
+  else if (searchQuery.value === 'keyword'){
     getCollection('',inputField.value);
   }
 }
@@ -151,39 +157,61 @@ function clearPlaylist(){
   playlist = [];
   currentTrack = 0;
   var pl = document.getElementById('playlist');
-  if (pl) {
-    while (pl.firstChild) {
+  if (pl){
+    while (pl.firstChild){
       pl.removeChild(pl.firstChild);
     }
   }
 }
 
-document.querySelector('body').addEventListener('click', function(event) {
-  if (event.target.tagName.toLowerCase() === 'div') {
-    currentTrack = +event.target.getAttribute('playlist-id');
-    streamTrack(playlist[currentTrack]);
+function highlightPlaying(){
+  for (var i = 0; i < tracks.length; i++) {
+    tracks[i].setAttribute('id', '');
+    if(+tracks[i].getAttribute('playlist-id') ===  currentTrack){
+      tracks[i].setAttribute('id', 'playing');
+    }
+  }
+}
+
+document.querySelector('body').addEventListener('click', function(event){
+  if (event.target.className === 'track'){
+    if (+event.target.getAttribute('playlist-id') === currentTrack){
+      if(currentPlayer.isPlaying()){
+        // event.target.style.backgroundImage = event.target.style.backgroundImage.prepend('url(img/paused.png), ');
+        currentPlayer.pause();
+        event.target.setAttribute('id', 'paused');
+      } else {
+        // event.target.style.backgroundImage = 'url(img/playing.png), ' + event.target.style.backgroundImage;
+        currentPlayer.play();
+        event.target.setAttribute('id', 'playing');
+      }
+    } else {
+      currentTrack = +event.target.getAttribute('playlist-id');
+      streamTrack(playlist[currentTrack]);
+      event.target.setAttribute('id', 'playing');
+    }
   }
 });
 
 document.getElementById('searchForm').addEventListener('submit', search);
 
 document.getElementById('pause').addEventListener('click', function(){
-  if (currentPlayer._isPlaying) {
+  if (currentPlayer._isPlaying){
     currentPlayer.pause();
   }
 });
 
 document.getElementById('play').addEventListener('click', function(){
-  if (!currentPlayer._isPlaying) {
+  if (!currentPlayer._isPlaying){
     currentPlayer.play();
   }
 });
 
 document.getElementById('vol-up').addEventListener('click', function(){
-  if (currentPlayer && currentPlayer.getVolume() < 1) {
+  if (currentPlayer && currentPlayer.getVolume() < 1){
     volume += 0.1;
     currentPlayer.setVolume(volume);
-    if (currentPlayer.getVolume() > 1) {
+    if (currentPlayer.getVolume() > 1){
       currentPlayer.setVolume(1);
       volume = 1;
     }
@@ -192,10 +220,10 @@ document.getElementById('vol-up').addEventListener('click', function(){
 });
 
 document.getElementById('vol-down').addEventListener('click', function(){
-  if (currentPlayer && currentPlayer.getVolume() > 0) {
+  if (currentPlayer && currentPlayer.getVolume() > 0){
     volume -= 0.1;
     currentPlayer.setVolume(volume);
-    if (currentPlayer.getVolume() < 0) {
+    if (currentPlayer.getVolume() < 0){
       currentPlayer.setVolume(0);
       volume = 0;
     }
@@ -204,14 +232,14 @@ document.getElementById('vol-down').addEventListener('click', function(){
 });
 
 document.getElementById('next').addEventListener('click', function(){
-  if (currentPlayer && currentTrack !== playlist.length -1) {
+  if (currentPlayer && currentTrack !== playlist.length -1){
     currentTrack++;
     streamTrack(playlist[currentTrack]);
   }
 });
 
 document.getElementById('prev').addEventListener('click', function(){
-  if (currentPlayer && currentTrack !== 0) {
+  if (currentPlayer && currentTrack !== 0){
     currentTrack--;
     streamTrack(playlist[currentTrack])
   }
@@ -245,7 +273,7 @@ previousPage.addEventListener('click', function(){
   if(currentPage === 2){
     getCollection(currentSearch);
     previousPage.style.visibility = 'hidden';
-  } else {
+  } else{
     getJSON(nextHref[currentPage - 3]).then(function(data){
       organiseTracks(data.collection);
     });

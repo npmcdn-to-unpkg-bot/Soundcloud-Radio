@@ -2,13 +2,15 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	font-family: "Lucida Console", Monaco, monospace;
+	/*font-family: "Lucida Console", Monaco, monospace;*/
+	font-family: Impact, Charcoal, sans-serif;
 	/*background-image: -webkit-linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 	/*background-image: linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 }
 input {
 	font-size: 20px;
 	text-align: center;
+	margin-right: 10px;
 	/*border: none;*/
 	color: transparent;
 	text-shadow: 0 0 0 gray;
@@ -46,6 +48,9 @@ input, p {
 		width: 500px;
 	}
 }
+#search-query {
+	margin-left: 10px;
+}
 #controls {
 	z-index: 1000;
 	margin-top: 10px;
@@ -70,23 +75,62 @@ input, p {
 }
 #nav {
 	width: 100%;
+	font-size: 2em;
+	/*font-family: cursive;*/
+}
+#playlist {
+	/*padding: 0;*/
+}
+.playlist-container {
+	margin-left: 5%;
+	margin-right: 5%;
+	padding-left: 10px;
 }
 #playlist > .track {
 	display: inline-block;
 }
 .track {
-	background-color: blue;
+	margin-right: 5px;
 	position: relative;
 	width: 200px;
-	height: 240px;
-	border: 1px solid black;
-	background: url('../img/image1.jpg') no-repeat center 5px;
+	height: 260px;
+	border: 2px solid black;
+	background-position: center 5px;
+	background-repeat:  no-repeat ;
 	background-size: 180px 180px;
+}
+.track:hover, #playing {
+	border: 2px solid orange;
+}
+#paused {
+	border: 2px solid red;
+}
+.track > img {
+	background-position: no-repeat center 5px;
+	background-repeat: no-repeat;
+	position: absolute;
+	left: 10px;
+	top: 5px;
 }
 .track > .song-info {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
-	height: 45px;
+	height: 65px;
 	text-align: center;
+	overflow: scroll;
+}
+.track > .user {
+	background-color: white;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 27px;
+	text-align: center;
+	overflow: scroll;
+}
+.song-info > a {
+	color: black;
+	text-decoration: none;
+	/*font-family: Impact, Charcoal, sans-serif;*/
 }

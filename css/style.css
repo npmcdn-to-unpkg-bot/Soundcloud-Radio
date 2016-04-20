@@ -1,11 +1,27 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+		background-color: white;
+		border: 2px solid black;
+		position: fixed;
+}
 body {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	/*align-items: center;*/
 	/*font-family: "Lucida Console", Monaco, monospace;*/
 	font-family: Impact, Charcoal, sans-serif;
 	/*background-image: -webkit-linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 	/*background-image: linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
+
+  margin: 0 0 100px; /* bottom = footer height */
 }
 input {
 	font-size: 20px;
@@ -14,20 +30,20 @@ input {
 	/*border: none;*/
 	color: transparent;
 	text-shadow: 0 0 0 gray;
-	text-align: center;
+	/*text-align: center;*/
 	&:focus {
 			outline: none;
 			color: transparent;
 	}
 }
 /* webkit */
-::-webkit-input-placeholder {
-	text-align:left;
-}
+/*::-webkit-input-placeholder {*/
+	/*text-align:left;*/
+/*}*/
 /* mozilla */
-input:-moz-placeholder {
-	 text-align:left;
- }
+/*input:-moz-placeholder {*/
+	 /*text-align:left;*/
+ /*}*/
 #info {
 	display: none;
 	align-items: center;
@@ -40,21 +56,33 @@ input, p {
 }
 #progress{
 	display: none;
-	align-items: center;
+	/*align-items: center;*/
 	padding-top: 10px;
+	position: absolute;
+	top: 10px;
+	right: 100px;
 }
 @media (min-width: 500px) {
 	input, p {
-		width: 500px;
+		width: 200px;
+    margin-top: 10px;
+    margin-left: 10px;
 	}
 }
 #search-query {
+	margin-left: 10px;
+}
+#title {
 	margin-left: 10px;
 }
 #controls {
 	z-index: 1000;
 	margin-top: 10px;
 	margin-bottom: 10px;
+	margin-left: 10px;
+	position: absolute;
+	top: 10px;
+
 }
 #artwork {
 	margin-top: 10px;
@@ -62,6 +90,7 @@ input, p {
 }
 #seekbar {
 	width:400px;
+	/*float: right;*/
 }
 #next-page {
 	text-align: right;
@@ -72,6 +101,7 @@ input, p {
 }
 #volume-bar {
 	width: 70px;
+	margin-left: 10px;
 }
 #nav {
 	width: 100%;
@@ -91,6 +121,7 @@ input, p {
 }
 .track {
 	margin-right: 5px;
+	margin-bottom: 2px;
 	position: relative;
 	width: 200px;
 	height: 260px;

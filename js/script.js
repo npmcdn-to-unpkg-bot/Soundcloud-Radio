@@ -98,8 +98,11 @@ function getCollection(genre, keyword){
 function organiseTracks(collection){
   for (var i = 0; i < collection.length; i++){
     playlist.push(collection[i]);
-    createPlaylist(playlist[i].title, playlist[i].artwork_url,
-      playlist[i].user.username, i);
+    if(playlist[i].artwork_url){
+      playlist[i].artwork_url = playlist[i].artwork_url.replace('large', 't300x300');
+    }
+    createPlaylist(playlist[i].title,
+      playlist[i].artwork_url, playlist[i].user.username, i);
   }
   streamTrack(playlist[currentTrack]);
 }
@@ -171,6 +174,28 @@ function highlightPlaying(){
     }
   }
 }
+function increaseVolume(){
+  if (currentPlayer && currentPlayer.getVolume() < 1){
+    volume += 0.1;
+    currentPlayer.setVolume(volume);
+    if (currentPlayer.getVolume() > 1){
+      currentPlayer.setVolume(1);
+      volume = 1;
+    }
+    volumeBar.setAttribute('value', currentPlayer.getVolume());
+  }
+}
+function decreaseVolume(){
+  if (currentPlayer && currentPlayer.getVolume() > 0){
+    volume -= 0.1;
+    currentPlayer.setVolume(volume);
+    if (currentPlayer.getVolume() < 0){
+      currentPlayer.setVolume(0);
+      volume = 0;
+    }
+    volumeBar.setAttribute('value', currentPlayer.getVolume());
+  }
+}
 
 document.querySelector('body').addEventListener('click', function(event){
   if (event.target.className === 'track'){
@@ -207,27 +232,11 @@ document.getElementById('play').addEventListener('click', function(){
 });
 
 document.getElementById('vol-up').addEventListener('click', function(){
-  if (currentPlayer && currentPlayer.getVolume() < 1){
-    volume += 0.1;
-    currentPlayer.setVolume(volume);
-    if (currentPlayer.getVolume() > 1){
-      currentPlayer.setVolume(1);
-      volume = 1;
-    }
-    volumeBar.setAttribute('value', currentPlayer.getVolume());
-  }
+  increaseVolume();
 });
 
 document.getElementById('vol-down').addEventListener('click', function(){
-  if (currentPlayer && currentPlayer.getVolume() > 0){
-    volume -= 0.1;
-    currentPlayer.setVolume(volume);
-    if (currentPlayer.getVolume() < 0){
-      currentPlayer.setVolume(0);
-      volume = 0;
-    }
-    volumeBar.setAttribute('value', currentPlayer.getVolume());
-  }
+  decreaseVolume();
 });
 
 document.getElementById('next').addEventListener('click', function(){
@@ -277,5 +286,45 @@ previousPage.addEventListener('click', function(){
       organiseTracks(data.collection);
     });
     currentPage--;
+  }
+});
+
+searchQuery.addEventListener('change', function(){
+  if(this.value === 'keyword'){
+    inputField.setAttribute('placeholder', 'Song Title, Artist, Instrument');
+  } else if(this.value === 'genre'){
+    inputField.setAttribute('placeholder', 'Drum&Bass,House,Techno');
+  }
+});
+
+document.querySelector('body').addEventListener('keypress', function(event){
+  if(currentPlayer){
+    if(event.charCode === 32 && document.activeElement !== inputField){
+      if(true){
+        event.preventDefault();
+        if(currentPlayer.isPlaying()){
+          currentPlayer.pause();
+        } else if(playlist[0]){
+          currentPlayer.play();
+        }
+      }
+    }
+    else if(event.charCode === 61){
+      event.preventDefault();
+      increaseVolume();
+    }
+    else if(event.charCode === 45){
+      event.preventDefault();
+      decreaseVolume();
+    }
+    else if(event.charCode === 93 && currentTrack !== playlist.length -1){
+      event.preventDefault();
+      currentTrack++;
+      streamTrack(playlist[currentTrack]);
+    }
+    else if (event.charCode === 91 && currentTrack !== 0){
+      currentTrack--;
+      streamTrack(playlist[currentTrack])
+    }
   }
 });

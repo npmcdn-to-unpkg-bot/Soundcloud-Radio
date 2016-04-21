@@ -13,18 +13,18 @@ footer {
 		position: fixed;
 }
 body {
-	display: flex;
-	flex-direction: column;
+	/*display: flex;*/
+	/*flex-direction: column;*/
 	/*align-items: center;*/
 	/*font-family: "Lucida Console", Monaco, monospace;*/
 	font-family: Impact, Charcoal, sans-serif;
 	/*background-image: -webkit-linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 	/*background-image: linear-gradient(45deg,#39cccc,rgba(0,255,127,.7));*/
 
-  margin: 0 0 100px; /* bottom = footer height */
+  margin: 0 0 50px; /* bottom = footer height */
 }
 input {
-	font-size: 20px;
+	font-size: 16px;
 	text-align: center;
 	margin-right: 10px;
 	/*border: none;*/
@@ -64,7 +64,7 @@ input, p {
 }
 @media (min-width: 500px) {
 	input, p {
-		width: 200px;
+		width: 180px;
     margin-top: 10px;
     margin-left: 10px;
 	}
@@ -106,15 +106,18 @@ input, p {
 #nav {
 	width: 100%;
 	font-size: 2em;
+	padding: 10px;
 	/*font-family: cursive;*/
 }
 #playlist {
 	/*padding: 0;*/
 }
 .playlist-container {
-	margin-left: 5%;
-	margin-right: 5%;
-	padding-left: 10px;
+	margin-left: 13%;
+	margin-top: -13px;
+	/*display: inline;*/
+	/*margin-right: 5%;*/
+	/*padding-left: 10px;*/
 }
 #playlist > .track {
 	display: inline-block;
@@ -164,4 +167,20 @@ input, p {
 	color: black;
 	text-decoration: none;
 	/*font-family: Impact, Charcoal, sans-serif;*/
+}
+/*.side-panel {
+	background-color: black;
+	/*position: fixed;*/
+	/*width: 19%;*/
+	/*height: 100%;*/
+	/*position: absolute;*/
+/*}*/
+#keyboard-shortcuts {
+	border: 2px solid black;
+	margin-top: 20px;
+	margin-left: 10px;
+	width: 180px;
+	height: 150px;
+	display: none;
+	/*visibility: hidden;*/
 }

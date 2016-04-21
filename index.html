@@ -3,17 +3,27 @@
   <head>
     <meta charset="utf-8">
     <title>Soundcloud Music Player</title>
+    <!-- <link href="https://npmcdn.com/basscss@8.0.1/css/basscss.min.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <form id="searchForm">
-      <input type="text" id="search" placeholder="What Genre?" autofocus />
-      Search By:<select id="search-query">
-        <option value="genre" selected="selected">Genre</option>
-        <option value="keyword">Keyword</option>
-      </select>
-    </form>
+    <!-- <div class="side-panel"> -->
+      <form id="searchForm">
+        <input type="text" id="search" placeholder="What Genre?" autofocus />
+        Search By:<select id="search-query">
+          <option value="genre" selected="selected">Genre</option>
+          <option value="keyword">Keyword</option>
+        </select>
+      </form>
+    <!-- </div> -->
     <!-- <img id="artwork" /> -->
+    <div id="keyboard-shortcuts">
+      <p>Space = Play/Pause</p>
+      <p>+ = Vol+</p>
+      <p>- = Vol-</p>
+      <p>[ = Previous Track</p>
+      <p>] = Skip Track</p>
+    </div>
     <div class="playlist-container">
       <ul id="playlist"></ul>
     </div>

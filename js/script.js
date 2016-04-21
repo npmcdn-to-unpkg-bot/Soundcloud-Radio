@@ -326,5 +326,8 @@ document.querySelector('body').addEventListener('keypress', function(event){
       currentTrack--;
       streamTrack(playlist[currentTrack])
     }
+    else if(event.charCode === 115 && document.activeElement !== inputField){
+       inputField.focus();
+    }
   }
 });

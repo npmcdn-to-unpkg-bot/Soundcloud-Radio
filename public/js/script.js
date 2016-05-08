@@ -1,5 +1,5 @@
 SC.initialize({
-  client_id: '35ae1f409c6f36d7cd493f3974c34135'
+  client_id: 'YOUR_CLIENT_ID'
 });
 
 var inputField = document.getElementById('search'),
@@ -22,10 +22,6 @@ var inputField = document.getElementById('search'),
     trackDuration,
     currentPlayer,
     currentSearch;
-
-String.prototype.prepend = function(string){
-  return string + this;
-}
 
 function msToTime(d){
   var ml = parseInt((d%1000)/100),
@@ -296,7 +292,7 @@ searchQuery.addEventListener('change', function(){
     inputField.setAttribute('placeholder', 'Drum&Bass,House,Techno');
   }
 });
-
+// Keyboard shortcuts
 document.querySelector('body').addEventListener('keypress', function(event){
   if(currentPlayer){
     if(event.charCode === 32 && document.activeElement !== inputField){

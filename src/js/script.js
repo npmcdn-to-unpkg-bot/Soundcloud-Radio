@@ -1,5 +1,5 @@
 SC.initialize({
-  client_id: '35ae1f409c6f36d7cd493f3974c34135'
+  client_id: 'YOUR_CLIENT_ID'
 });
 
 var inputField = document.getElementById('search'),

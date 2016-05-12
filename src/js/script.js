@@ -1,5 +1,5 @@
 SC.initialize({
-  client_id: 'YOUR_CLIENT_ID'
+  client_id: '35ae1f409c6f36d7cd493f3974c34135'
 });
 
 var inputField = document.getElementById('search'),
@@ -76,8 +76,8 @@ function getJSON(url){
   });
 }
 
-function getCollection(genre, keyword){
-  SC.get('/tracks/',{genres: genre, q: keyword, limit: pageSize,
+function getCollection(genre, query){
+  SC.get('/tracks/',{genres: genre, q: query, limit: pageSize,
     linked_partitioning: currentPage})
     .then(function(tracks){
       clearPlaylist();
@@ -146,7 +146,7 @@ function search(event){
   if (searchQuery.value === 'genre'){
     getCollection(inputField.value);
   }
-  else if (searchQuery.value === 'keyword'){
+  else if (searchQuery.value === 'query'){
     getCollection('',inputField.value);
   }
 }
@@ -286,7 +286,7 @@ previousPage.addEventListener('click', function(){
 });
 
 searchQuery.addEventListener('change', function(){
-  if(this.value === 'keyword'){
+  if(this.value === 'query'){
     inputField.setAttribute('placeholder', 'Song Title, Artist, Instrument');
   } else if(this.value === 'genre'){
     inputField.setAttribute('placeholder', 'Drum&Bass,House,Techno');

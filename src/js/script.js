@@ -296,13 +296,11 @@ searchQuery.addEventListener('change', function(){
 document.querySelector('body').addEventListener('keypress', function(event){
   if(currentPlayer){
     if(event.charCode === 32 && document.activeElement !== inputField){
-      if(true){
-        event.preventDefault();
-        if(currentPlayer.isPlaying()){
-          currentPlayer.pause();
-        } else if(playlist[0]){
-          currentPlayer.play();
-        }
+      event.preventDefault();
+      if(currentPlayer.isPlaying()){
+        currentPlayer.pause();
+      } else if(playlist[0]){
+        currentPlayer.play();
       }
     }
     else if(event.charCode === 61){

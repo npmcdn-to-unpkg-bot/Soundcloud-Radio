@@ -111,6 +111,9 @@ input, p {
 }
 #playlist {
 	/*padding: 0;*/
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
 }
 .playlist-container {
 	margin-left: 13%;
